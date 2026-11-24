@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+Django Shop - Account
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/account.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-contect odstep">
+  <div class="account-container">
+    <div class="account-header">
+      <h1>Manage Your Account <i class="fas fa-user-cog"></i></h1>
+      <p class="lead">Update your delivery informations and view your order history</p>
+      <p class="lead">Full name: {{ name }}</p>
+      <p class="lead">Email: {{ email }}</p>
+    </div>
+
+    <!-- User Delivery informations -->
+    <div class="account-section">
+      <h3>Delivery Informations</h3>
+
+    <form action="{% url 'update_account' %}" method="POST">
+      {% csrf_token %}
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="id_address_1" class="form-label">Street and number</label>
+          <input type="text" name="address_1" id="id_address_1" class="form-control" placeholder="Street and number" value="{{ form.address_1.value|default_if_none:'' }}" required>
+          {% for error in form.address_1.errors %}
+            <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+        <div class="col-md-6">
+          <label for="id_address_2" class="form-label">Apartment number etc. (optional)</label>
+          <input type="text" name="address_2" id="id_address_2" class="form-control" placeholder="Apartment, suite, etc." value="{{ form.address_2.value|default_if_none:'' }}">
+          {% for error in form.address_2.errors %}
+            <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="id_zip_code" class="form-label">ZIP Code</label>
+          <input type="text" name="zip_code" id="id_zip_code" class="form-control" placeholder="00-000" value="{{ form.zip_code.value|default_if_none:'' }}" required>
+          {% for error in form.zip_code.errors %}
+            <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+        <div class="col-md-6">
+          <label for="id_city" class="form-label">City</label>
+          <input type="text" name="city" id="id_city" class="form-control" placeholder="Your city" value="{{ form.city.value|default_if_none:'' }}" required>
+          {% for error in form.city.errors %}
+            <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="id_phone" class="form-label">Phone</label>
+        <input type="text" name="phone" id="id_phone" class="form-control" placeholder="+48 123 456 789" value="{{ form.phone.value|default_if_none:'' }}" required>
+        {% for error in form.phone.errors %}
+          <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <div class="d-grid">
+        <button type="submit" class="btn btn-update">Update</button>
+      </div>
+    </form>
+  </div>
+    <!-- Sekcja historii zamówień -->
+    <div class="account-section">
+      <h3>Order History</h3>
+      {% if orders %}
+        <div class="table-responsive">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in orders %}
+              <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.date|date:"Y-m-d H:i" }}</td>
+                <td>
+                  <ul class="order-items-list">
+                    {% for item in order.orderitem_set.all %}
+                      <li>
+                        {% if item.product %}
+                          {{ item.product.name }}
+                        {% else %}
+                          {{ item.name }}
+                        {% endif %}
+                          {% if item.product.category == 'time_services' %}
+                            (x{{ item.quantity }} months)
+                          {% else %}
+                            (x{{ item.quantity }})
+                          {% endif %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                  <div class="order-details">
+                    <small><strong>Shipping to:</strong>
+                      {{ order.address_1 }}
+                      {% if order.address_2 %}
+                        / {{ order.address_2 }}
+                      {% endif %}
+                      , {{ order.zip_code }} {{ order.city }}
+                    </small>
+                  </div>
+                </td>
+                <td>{{ order.total_amount }} PLN</td>
+                <td>
+                  <span class="order-status
+                    {% if order.status == 'finished' %}status-completed{% endif %}
+                    {% if order.status == 'in_progress' %}status-pending{% endif %}
+                    {% if order.status != 'finished' and order.status != 'in_progress' %}status-cancelled{% endif %}
+                  ">
+                    {% if order.status == "in_progress" %}
+                      In progress
+                    {% elif order.status == "finished" %}
+                      Finished
+                    {% else %}
+                      Canceled
+                    {% endif %}
+                  </span>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center py-4">
+          <i class="fas fa-shopping-bag fa-3x mb-3" style="color: #5a8f8d;"></i>
+          <h4>No orders yet</h4>
+          <p>You haven't placed any orders with us.</p>
+          <a href="/shop" class="btn btn-update">Browse Products</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'accounts/js/account.js' %}"></script>
+{% endblock %}

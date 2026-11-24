@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+Django Shop - Terms and conditions
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop/css/shop.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-4 odstep">
+  <div style="max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #333;">
+    <h1 style="color: #222;">Terms and Conditions</h1>
+
+    <div style="background: #fff4e5; border-left: 5px solid #ffa500; padding: 15px; margin: 20px 0; font-size: 1.1em;">
+        <strong>Important:</strong> This website is a <strong>demo project</strong> created for educational and portfolio purposes only.
+    </div>
+
+    <p>This Django Shop is not a real online store. It was created solely to demonstrate the technical capabilities of the developer and showcase a sample e-commerce platform using Django.</p>
+
+    <h2>1. No Real Transactions</h2>
+    <p>All products, prices, and order processes are fictional. You cannot make any real purchases, and no products or services will be delivered.</p>
+
+    <h2>2. Personal Data</h2>
+    <p>Any personal data you may enter in this store (e.g., name, address, email) is not used for marketing, or shared with third parties. The form data is for demo/testing purposes only.</p>
+
+    <h2>3. Images and Content</h2>
+    <p>Images used in this project are either original or sourced from royalty-free platforms. All content is used in accordance with respective licenses.</p>
+
+    <h2>4. Purpose and Use</h2>
+    <p>This website is a non-commercial educational showcase. Any usage of this website is strictly at your own risk. No warranties or guarantees are provided.</p>
+
+    <h2>5. Contact</h2>
+    <p>If you have any questions about this demo project, please contact the developer via the portfolio site or GitHub profile.</p>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'shop/js/shop.js' %}"></script>
+{% endblock %}

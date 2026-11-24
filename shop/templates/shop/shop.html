@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+Django Shop - Store
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop/css/shop.css' %}">
+{% endblock %}
+
+{% block content %}
+
+
+
+
+
+<div class="container my-4 odstep">
+  <h2 class="text-center">Products and services</h2>
+  <div class="d-flex justify-content-center">
+    <button class="btn btn-outline-secondary mx-2 filter-btn" id="all-btn" onclick="filterProducts('all', this)">All</button>
+    <button class="btn btn-outline-secondary mx-2 filter-btn" id="electronics-btn" onclick="filterProducts('products', this)">Products</button>
+    <button class="btn btn-outline-secondary mx-2 filter-btn" id="clothing-btn" onclick="filterProducts(['services', 'time_services'], this)">Services</button>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    {% for product in products %}
+      <div class="col-lg-4 col-md-6 col-sm-12 mb-4 product-card {{ product.category }}">
+        <div class="card clickable" onclick="window.location.href='{% url 'product_detail' product.id %}';">
+            <img src="{{ product.productimage_set.first.image.url }}" class="card-img-top img-fluid">
+            <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            {% if product.category == "products" or product.category == "services" %}
+              <p class="card-text">{{ product.price }} PLN</p>
+            {% else %}
+              <p class="card-text">{{ product.price }} PLN / month</p>
+            {% endif %}
+
+            {% if product.stock <= 0 and product.category == 'products' %}
+              <div class="btn btn-secondary btn-add-to-cart disabled mt-2" style="cursor: not-allowed;">
+                <i class="fas fa-box-open me-2"></i> Out of stock
+              </div>
+            {% else %}
+              <form action="{% url 'add_to_cart' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="category" value="{{ product.category }}">
+                <button type="submit" class="btn btn-add btn-add-to-cart mt-2">
+                  <i class="fas fa-shopping-cart me-2"></i> Add to cart
+                </button>
+              </form>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% if messages %}
+  {% for message in messages %}
+    {% if "email-preview" in message.tags %}
+      <!-- Overlay -->
+      <div id="email-overlay" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(128, 128, 128, 1);
+        z-index: 9998;
+      "></div>
+
+      <!-- Popup -->
+      <div id="email-popup" style="
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        color: #000;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.4);
+        max-width: 800px;
+        width: 90%;
+        z-index: 9999;
+        text-align: left;
+        overflow-y: auto;
+        max-height: 80vh;
+        font-family: Arial, sans-serif;
+      ">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <strong>📧 Email preview — email sending option disabled 📧</strong>
+          <button onclick="document.getElementById('email-popup').remove(); document.getElementById('email-overlay').remove();" style="
+            background: none;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #666;
+          ">✖</button>
+        </div>
+        <div>
+          {{ message|safe }}
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+          <button onclick="document.getElementById('email-popup').remove(); document.getElementById('email-overlay').remove();" style="
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+          ">Close</button>
+        </div>
+
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'shop/js/shop.js' %}"></script>
+{% endblock %}

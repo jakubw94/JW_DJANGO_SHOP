@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order summary #{{ order.id }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lato', Arial, sans-serif;
+            color: #212529;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2 {
+            color: #343a40;
+            margin-bottom: 15px;
+        }
+        p {
+            margin: 10px 0;
+        }
+        ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        strong {
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+        td {
+            border: 1px solid #dee2e6;
+        }
+
+        .total {
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-align: left;
+        }
+        .contact-info {
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Order summary</h1>
+
+    <table class="table table-bordered table-responsive">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Unit price (with taxes)</th>
+                <th>Total price (with taxes)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in cart %}
+            <tr>
+                <td>{{ product.name }}</td>
+                {% if product.category == "products" or product.category == "services" %}
+                <td>{{ product.quantity }} pcs</td>
+                <td>{{ product.price }} zł</td>
+                {% elif product.category == "time_services" %}
+                <td>{{ product.quantity }} month(s)</td>
+                <td>{{ product.price }} zł / month</td>
+                {% else %}
+                <td></td>
+                <td></td>
+                {% endif %}
+                <td>{{ product.total }} zł</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p class="total">Total: <strong>{{ total }} zł</strong></p>
+
+    <div class="contact-info">
+        <h2>Your informations</h2>
+        <p><strong>Full name:</strong> {{ order.first_name }} {{ order.last_name }}</p>
+        <p><strong>Address:</strong>
+            {{ order.address_1 }}
+                {% if order.address_2 %}
+                   / {{ order.address_2 }}
+                {% endif %}</p>
+        <p><strong>Zip-code:</strong> {{ order.zip_code }}</p>
+        <p><strong>City:</strong> {{ order.city }}</p>
+        <p><strong>Phone number:</strong> {{ order.phone }}</p>
+        <p><strong>Email:</strong> {{ order.email }}</p>
+    </div>
+
+    <p class="footer">But... nothing will happen. This Django Shop is not a real online store. It was created solely to demonstrate the technical capabilities of the developer and showcase a sample e-commerce platform using Django.</p>
+
+    <p>Best regards,<br>
+    <strong>Django Shop - auto-notification system</strong></p>
+</body>
+</html>

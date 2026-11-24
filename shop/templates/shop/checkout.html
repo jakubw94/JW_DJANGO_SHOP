@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+Django Shop - Checkout
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop/css/checkout.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5 odstep">
+  <div class="col-md-8 mx-auto">
+    <h3 class="text-center mb-4">Checkout <i class="fas fa-shopping-cart"></i></h3>
+
+    <div class="mb-4">
+      <h5>Order items</h5>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Quantity</th>
+            <th>Unit price (with taxes)</th>
+            <th>Total price (with taxes)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in cart.products|default_if_none:"" %}
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.quantity }} pcs</td>
+            <td>{{ product.price }} zł</td>
+            <td>{{ product.total }} zł</td>
+          </tr>
+          {% endfor %}
+          {% for service in cart.services %}
+          <tr>
+            <td>{{ service.name }}</td>
+            <td>{{ service.quantity }} pcs</td>
+            <td>{{ service.price }} zł</td>
+            <td>{{ service.total }} zł</td>
+          </tr>
+          {% endfor %}
+          {% for t in cart.time_services %}
+          <tr>
+            <td>{{ t.name }}</td>
+            <td>{{ t.quantity }} months</td>
+            <td>{{ t.price }} zł / month</td>
+            <td>{{ t.total }} zł</td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td colspan="3" class="text-end"><strong>Total</strong></td>
+            <td><strong>{{ total }} zł</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    {% if user.is_authenticated %}
+      <h4>Order delivery informations</h4>
+    {% else %}
+      <h4>Order delivery informations (auto-filled when <a href="{% url 'login' %}" style="color: #5a8f8d;">logged in</a>)</h4>
+    {% endif %}
+    <br>
+
+   <form method="POST" action="{% url 'make_order' %}" class="needs-validation" novalidate>
+  {% csrf_token %}
+
+  <!-- Name Fields -->
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label for="id_first_name" class="form-label">First name*</label>
+      <input
+          type="text"
+          name="first_name"
+          id="id_first_name"
+          class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
+          value="{{ form.first_name.value|default_if_none:'' }}"
+          required
+      >
+      {% for error in form.first_name.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
+    </div>
+    <div class="col-md-6">
+      <label for="id_last_name" class="form-label">Last name*</label>
+      <input
+          type="text"
+          name="last_name"
+          id="id_last_name"
+          class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
+          value="{{ form.last_name.value|default_if_none:'' }}"
+          required
+      >
+      {% for error in form.last_name.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if not request.user.is_authenticated %}
+  <!-- Email Field -->
+  <div class="mb-3">
+    <label for="id_email" class="form-label">Email*</label>
+    <input
+        type="email"
+        name="email"
+        id="id_email"
+        class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+        required
+        placeholder="your@email.com"
+        value="{{ form.email.value|default_if_none:'' }}"
+    >
+    {% for error in form.username.errors %}
+      <div class="invalid-feedback">{{ error }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Address Section -->
+  <div class="border-top pt-3 mt-4 mb-3">
+    <h5 class="mb-3">Shipping Address</h5>
+
+    <!-- Street Address -->
+    <div class="mb-3">
+      <label for="id_address_1" class="form-label">Street and number*</label>
+      <input
+          type="text"
+          name="address_1"
+          id="id_address_1"
+          class="form-control {% if form.address_1.errors %}is-invalid{% endif %}"
+          required
+          value="{{ form.address_1.value|default_if_none:'' }}"
+          placeholder="Main St 123"
+      >
+      {% for error in form.address_1.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <!-- Apartment -->
+    <div class="mb-3">
+      <label for="id_address_2" class="form-label">Apartment number (optional)</label>
+      <input
+          type="text"
+          name="address_2"
+          id="id_address_2"
+          class="form-control {% if form.address_2.errors %}is-invalid{% endif %}"
+          placeholder="Apt 45"
+          value="{{ form.address_2.value|default_if_none:'' }}"
+      >
+      {% for error in form.address_2.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <!-- Zip Code & City -->
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="id_zip_code" class="form-label">Zip-code*</label>
+        <input
+            type="text"
+            name="zip_code"
+            id="id_zip_code"
+            class="form-control {% if form.zip_code.errors %}is-invalid{% endif %}"
+            minlength="6"
+            maxlength="6"
+            required
+            placeholder="00-000"
+            value="{{ form.zip_code.value|default_if_none:'' }}"
+        >
+        {% for error in form.zip_code.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <div class="col-md-8">
+        <label for="id_city" class="form-label">City*</label>
+        <input
+            type="text"
+            name="city"
+            id="id_city"
+            class="form-control {% if form.city.errors %}is-invalid{% endif %}"
+            required
+            placeholder="e.g. Warsaw"
+            value="{{ form.city.value|default_if_none:'' }}"
+        >
+        {% for error in form.city.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div> <!-- End of Address Section -->
+
+  <!-- Phone -->
+  <div class="mb-3">
+    <label for="id_phone" class="form-label">Phone number*</label>
+    <input
+        type="tel"
+        name="phone"
+        id="id_phone"
+        class="form-control {% if form.phone.errors %}is-invalid{% endif %}"
+        minlength="9"
+        maxlength="12"
+        required
+        placeholder="123456789"
+        value="{{ form.phone.value|default_if_none:'' }}"
+    >
+    {% for error in form.phone.errors %}
+      <div class="invalid-feedback">{{ error }}</div>
+    {% endfor %}
+    <div class="form-text">9-12 digits without spaces</div>
+  </div>
+
+     <!-- CAPTCHA Section -->
+  <div class="mb-3 border-top pt-3">
+    <div class="d-flex align-items-center mb-2">
+      <!-- CAPTCHA Image -->
+      <div class="me-3">
+        <img src="{{ captcha }}" alt="CAPTCHA" class="img-fluid rounded border" style="height: 30px;">
+      </div>
+
+      <!-- CAPTCHA Answer -->
+      <div class="flex-grow-1">
+        <label for="id_captcha" class="form-label">What is the result?*</label>
+        <input
+            type="text"
+            name="captcha_input"
+            id="id_captcha"
+            class="form-control {% if captcha_error %}is-invalid{% endif %}"
+            required
+            placeholder="Enter the result"
+        >
+        {% if captcha_error %}
+          <div class="invalid-feedback">{{ captcha_error }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Hidden CAPTCHA Result -->
+    <input type="hidden" name="captcha_answer" value="{{ answer }}">
+    <div class="form-text">*Solve the simple math problem to prove you're human</div>
+  </div>
+
+
+  <!-- Accept Terms Field -->
+  <div class="mb-3 form-check">
+    <input
+      type="checkbox"
+      name="accept_terms"
+      id="id_accept_terms"
+      class="form-check-input {% if form.accept_terms.errors %}is-invalid{% endif %}"
+      required
+    >
+    <label class="form-check-label" for="id_accept_terms">
+      I accept terms and conditions
+    </label>
+    {% for error in form.accept_terms.errors %}
+      <div class="invalid-feedback">{{ error }}</div>
+    {% endfor %}
+  </div>
+
+
+  <!-- Submit Button -->
+  <div class="d-grid">
+    <button type="submit" class="btn btn-success btn-lg">Make order</button>
+  </div>
+</form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'shop/js/checkout.js' %}"></script>
+{% endblock %}

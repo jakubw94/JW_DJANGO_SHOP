@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+Django Shop - Contact
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop/css/contact.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-content odstep">
+    <div class="contact-form">
+        <h2>Call us:  +48 111 222 333 <i class="fas fa-phone-alt"></i></h2>
+        <p>or</p>
+      <h2>Send message <i class="fas fa-envelope"></i></h2>
+
+        <form method="post" action="{% url 'send_contact_message' %}" class="needs-validation" novalidate>
+        {% csrf_token %}
+
+        <!-- Email Field -->
+        <div class="mb-4">
+          <label for="id_email" class="form-label">Email</label>
+          <input
+            type="email"
+            name="email"
+            id="id_email"
+            class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+            required
+            placeholder="your@email.com"
+            value="{{ form.email.value|default_if_none:'' }}"
+          >
+          {% for error in form.email.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Subject Field -->
+        <div class="mb-4">
+          <label for="id_subject" class="form-label">Subject</label>
+          <input
+            type="text"
+            name="subject"
+            id="id_subject"
+            class="form-control {% if form.subject.errors %}is-invalid{% endif %}"
+            required
+            maxlength="200"
+            placeholder="How can we help you?"
+            value="{{ form.subject.value|default_if_none:'' }}"
+          >
+          {% for error in form.subject.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Message Field -->
+        <div class="mb-4">
+          <label for="id_message" class="form-label">Message</label>
+          <textarea
+            name="message"
+            id="id_message"
+            class="form-control {% if form.message.errors %}is-invalid{% endif %}"
+            rows="6"
+            required
+            maxlength="2000"
+            placeholder="Please describe your inquiry in detail..."
+          >{{ form.message.value|default_if_none:'' }}</textarea>
+          {% for error in form.message.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+          <!-- CAPTCHA Section -->
+  <div class="mb-3 border-top pt-3">
+    <div class="d-flex align-items-center mb-2">
+      <!-- CAPTCHA Image -->
+      <div class="me-3">
+        <img src="{{ captcha }}" alt="CAPTCHA" class="img-fluid rounded border" style="height: 30px;">
+      </div>
+
+      <!-- CAPTCHA Answer -->
+      <div class="flex-grow-1">
+        <label for="id_captcha" class="form-label">What is the result?*</label>
+        <input
+            type="text"
+            name="captcha_input"
+            id="id_captcha"
+            class="form-control {% if captcha_error %}is-invalid{% endif %}"
+            required
+            placeholder="Enter the result"
+        >
+        {% if captcha_error %}
+          <div class="invalid-feedback">{{ captcha_error }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Hidden CAPTCHA Result -->
+    <input type="hidden" name="captcha_answer" value="{{ answer }}">
+    <div class="form-text">*Solve the simple math problem to prove you're human</div>
+  </div>
+
+        <!-- Submit Button -->
+        <div class="d-grid mt-4">
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-paper-plane me-2"></i>Send Message
+          </button>
+        </div>
+      </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'shop/js/contact.js' %}"></script>
+{% endblock %}
