@@ -51,7 +51,7 @@
 
 **1️⃣ Sklonuj repozytorium:**
 ```
-git clone https://github.com/jakubwprojects/JW_DJANGO_SHOP.git
+git clone https://github.com/jakubw94/JW_DJANGO_SHOP.git
 cd JW_DJANGO_SHOP
 ```
 
