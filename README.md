@@ -93,6 +93,5 @@ python manage.py runserver
 **Jakub W**  
 
 ✉️ **[jakubw.devmail@gmail.com](mailto:jakubw.devmail@gmail.com)**  
-🔗 **[github.com/jakubwprojects](https://github.com/jakubwprojects)**
 
 ---
